@@ -1,51 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Activities;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 
 namespace API.Controllers;
 
-//[Route("api/[controller]")]
 public class ActivitiesController : BaseApiController
 {
-    private readonly DataContext _db;
-
-    public ActivitiesController(DataContext db)
-    {
-        _db = db;
-    }
+    //[HttpGet]
+    //public async Task<ActionResult<List<Activity>>> GetActivities(CancellationToken ct)
+    //{
+    //    return await Mediator.Send(new List.Query(), ct);
+    //}
 
     [HttpGet]
-    public ActionResult<List<Domain.Activity>> Get()
+    public async Task<ActionResult<List<Activity>>> GetActivities()
     {
-        return _db.Activities.ToList();
+        return await Mediator.Send(new List.Query());
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Domain.Activity> Get(Guid id)
+    public async Task<ActionResult<Activity>> GetActivity(Guid id)
     {
-        return _db.Activities.First(x => x.Id == id);
+        return await Mediator.Send(new Details.Query { Id = id });
     }
 
-    // POST api/values
     [HttpPost]
-    public void Post([FromBody]string value)
+    public async Task<IActionResult> CreateActivity([FromBody] Activity activity)
     {
+        return Ok(await Mediator.Send(new Create.Command { Activity = activity }));
     }
 
-    // PUT api/values/5
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody]string value)
+    public async Task<IActionResult> EditActivity(Guid id, [FromBody] Activity activity)
     {
+        activity.Id = id;
+        return Ok(await Mediator.Send(new Edit.Command { Activity = activity }));
     }
 
-    // DELETE api/values/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public async Task<IActionResult> DeleteActivity(Guid id)
     {
+        return Ok(await Mediator.Send(new Delete.Command { Id = id }));
     }
 }
 
