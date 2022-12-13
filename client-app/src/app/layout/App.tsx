@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Container } from 'semantic-ui-react';
 import { Activity } from '../models/activity';
 import NavBar from './NavBar';
 import ActivityDasboard from '../../features/activities/dasboard/ActivityDasboard';
 import {v4 as uuid} from 'uuid';
+import agent from '../api/agent';
+import LoadingComponent from './LoadingComponent';
 
 function App() {
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode]= useState(false);
+  const [loading, setLoading]= useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    axios.get<Activity[]>('https://localhost:5001/api/activities').then(response =>{
-      setActivities(response.data);
+    agent.Activities.list().then(response => {
+      let activities : Activity[] = [];
+      response.forEach(activity => {
+        activity.date =activity.date.split('T')[0];
+        activities.push(activity);
+      });
+      setActivities(response);
+      setLoading(false);
     });
   }, []);
 
@@ -35,18 +44,33 @@ function App() {
     setEditMode(false);
   }
 
-  function handleCreateOrEditActivity(activity : Activity){
-    activity.id ? setActivities([
-      ...activities.filter(x => x.id !== activity.id), 
-      {...activity, id : uuid()}
-    ]) : setActivities([...activities, activity]);
-    setEditMode(false);
-    setSelectedActivity(activity);
+  async function handleCreateOrEditActivity(activity : Activity) {
+    try{
+      setSubmitting(true);
+      if (activity.id){
+        await agent.Activities.update(activity);
+        setActivities([...activities.filter(x => x.id !== activity.id), activity]);
+      }else{
+        activity.id = uuid();
+        await agent.Activities.create(activity);
+        setActivities([...activities, activity]);
+      }
+      setSelectedActivity(activity);
+      setEditMode(false);
+    }catch(err){
+      console.log(err);
+    }
+    setSubmitting(false);
   }
 
-  function handleDeleteActivity(id : String){
+  async function handleDeleteActivity(id : string){
+    setSubmitting(true);
+    await agent.Activities.delete(id);
     setActivities([...activities.filter(x => x.id !== id)]);
+    setSubmitting(false);
   }
+
+  if (loading) return <LoadingComponent content='Loading App' />;
 
   return (
     <>
@@ -62,6 +86,7 @@ function App() {
           closeForm={handleFormClose}
           createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
+          submitting={submitting}
         />
       </Container>
     </>
