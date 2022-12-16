@@ -1,9 +1,7 @@
-import React from "react";
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import ActivityDasboard from "../../features/activities/dasboard/ActivityDasboard";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import ActivityForm from "../../features/activities/form/ActivityForm";
-import HomePage from "../../features/home/HomePage";
 import App from "../layout/App";
 
 export const routes: RouteObject[] = [
