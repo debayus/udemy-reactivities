@@ -29,6 +29,8 @@
     <None Remove="MediatR.Extensions.Microsoft.DependencyInjection" />
     <None Remove="AutoMapper" />
     <None Remove="Extensions\" />
+    <None Remove="FluentValidation" />
+    <None Remove="FluentValidation.DependencyInjectionExtensions" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />
