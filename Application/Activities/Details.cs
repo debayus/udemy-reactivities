@@ -1,5 +1,6 @@
 ﻿using System;
 using Application.Core;
+using AutoMapper.QueryableExtensions;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +10,12 @@ namespace Application.Activities
 {
 	public class Details
 	{
-		public class Query : IRequest<Result<Activity>>
+		public class Query : IRequest<Result<Activity?>>
 		{
 			public Guid Id { get; set; }
 		}
 
-        public class Handler : IRequestHandler<Query, Result<Activity>>
+        public class Handler : IRequestHandler<Query, Result<Activity?>>
         {
             private readonly DataContext _context;
 
@@ -23,11 +24,10 @@ namespace Application.Activities
                 _context = context;
             }
 
-            public async Task<Result<Activity>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Activity?>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var activity = await _context.Activities.FindAsync(request.Id) ?? default!;
-                if (activity == null) throw new Exception("Activity not found");
-                return Result<Activity>.Success(activity);
+                var activity = await _context.Activities.FindAsync(request.Id);
+                return Result<Activity?>.Success(activity);
             }
         }
     }

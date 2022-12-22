@@ -31,8 +31,10 @@
     <None Remove="Extensions\" />
     <None Remove="FluentValidation" />
     <None Remove="FluentValidation.DependencyInjectionExtensions" />
+    <None Remove="Middleware\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Middleware\" />
   </ItemGroup>
 </Project>

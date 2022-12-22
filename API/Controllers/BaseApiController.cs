@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace API.Controllers;
 
+[ApiController]
 [Route("api/[controller]")]
 public class BaseApiController : Controller
 {
@@ -20,18 +21,15 @@ public class BaseApiController : Controller
         {
             return NotFound();
         }
-        else if (result.IsSuccess && result.Value != null)
+        if (result.IsSuccess && result.Value != null)
         {
-            return Ok(result);
+            return Ok(result.Value);
         }
-        else if (result.IsSuccess && result.Value == null)
+        if (result.IsSuccess && result.Value == null)
         {
             return NotFound();
         }
-        else
-        {
-            return BadRequest(result.Error);
-        }
+        return BadRequest(result.Error);
     }
 }
 
