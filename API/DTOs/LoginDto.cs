@@ -1,9 +1,8 @@
-﻿using System;
-namespace API.DTOs;
-
-public class LoginDto
+namespace API.DTOs
 {
-    public string Email { get; set; } = default!;
-    public string Password { get; set; } = default!;
+    public class LoginDto
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
 }
-
